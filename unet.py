@@ -547,10 +547,8 @@ class Trainer(object):
     def __init__(
             self,
             diffusion_model,
-            folder,
-            *,
+            dataset,
             ema_decay = 0.995,
-            image_size = 128,
             train_batch_size = 32,
             train_lr = 1e-4,
             train_num_steps = 100000,
@@ -571,12 +569,12 @@ class Trainer(object):
         self.save_and_sample_every = save_and_sample_every
 
         self.batch_size = train_batch_size
-        self.image_size = diffusion_model.image_size
+        self.image_size = diffusion_model.img_size
         self.gradient_accumulate_every = gradient_accumulate_every
         self.train_num_steps = train_num_steps
 
-        self.ds = Dataset(folder, image_size)
-        self.dl = cycle(data.DataLoader(self.ds, batch_size = train_batch_size, shuffle=True, pin_memory=True))
+        self.ds = dataset
+        self.dl = cycle(data.DataLoader(self.ds, batch_size=train_batch_size, shuffle=True, pin_memory=True))
         self.opt = Adam(diffusion_model.parameters(), lr=train_lr)
 
         self.step = 0
@@ -620,10 +618,11 @@ class Trainer(object):
 
             while self.step < self.train_num_steps:
                 for i in range(self.gradient_accumulate_every):
-                    data = next(self.dl).cuda()
+                    # data = next(self.dl).cuda()
+                    data = next(self.dl)[0]
 
                     with autocast(enabled = self.amp):
-                        loss = self.model(data)
+                        loss = self.model.get_simple_loss(data)
                         self.scaler.scale(loss / self.gradient_accumulate_every).backward()
 
                     pbar.set_description(f'loss: {loss.item():.4f}')
