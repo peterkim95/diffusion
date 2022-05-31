@@ -116,7 +116,7 @@ trainer = Trainer(
     gradient_accumulate_every=2,  # gradient accumulation steps
     ema_decay=0.995,  # exponential moving average decay
     amp=True,  # turn on mixed precision
-    save_and_sample_every=100
+    save_and_sample_every=1000
 )
 
 trainer.train()
