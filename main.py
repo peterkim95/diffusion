@@ -11,6 +11,14 @@ def unsqueeze_like(t, like_t):
     return t.reshape(*t.shape, *(1,) * (len(like_t.shape) - len(t.shape)))
 
 
+def normalize_to_zero_and_one(t):
+    return (t+1)/2
+
+
+def normalize_to_neg_one_and_one(t):
+    return 2*t - 1
+
+
 class Diffusion(nn.Module):
     def __init__(self, denoiser, num_timesteps, img_size, channels):
         super().__init__()
@@ -48,7 +56,7 @@ class Diffusion(nn.Module):
         t = torch.randint(self.num_timesteps, (b,))
 
         target_noise = torch.randn_like(x_0)  # N(0,I)
-        x_t = self.q_sample(x_0, t, target_noise)
+        x_t = self.q_sample(normalize_to_neg_one_and_one(x_0), t, target_noise)
         predicted_noise = self.denoiser(x_t, t)
 
         return self.loss(predicted_noise, target_noise)
@@ -69,14 +77,16 @@ class Diffusion(nn.Module):
         for t in trange(self.num_timesteps - 1, -1, -1):
             t = torch.ones(sample_batch_size, dtype=torch.long) * t
             x_t = self.p_sample(x_t, t)
-        return x_t
+        return normalize_to_zero_and_one(x_t)
 
 
 # TODO: How do img dims all relate to one another, between Unet and Diffusion
-IMG_SIZE = 128
+# TODO: normalize and unnormalize images
+# TODO: train it on gpu
+IMG_SIZE = 32
 CHANNELS = 1
 
-denoiser = Unet(dim=64, dim_mults=(1, 2, 4, 8), channels=CHANNELS)
+denoiser = Unet(dim=16, dim_mults=(1, 2, 4, 8), channels=CHANNELS)
 
 diffuser = Diffusion(denoiser=denoiser, num_timesteps=1000, img_size=IMG_SIZE, channels=CHANNELS)
 
@@ -96,7 +106,7 @@ trainer = Trainer(
     train_num_steps=700000,  # total training steps
     gradient_accumulate_every=2,  # gradient accumulation steps
     ema_decay=0.995,  # exponential moving average decay
-    amp=False  # turn on mixed precision
+    amp=True  # turn on mixed precision
 )
 
 trainer.train()
