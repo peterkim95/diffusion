@@ -620,7 +620,7 @@ class Trainer(object):
             while self.step < self.train_num_steps:
                 for i in range(self.gradient_accumulate_every):
                     # data = next(self.dl).cuda()
-                    data = next(self.dl)[0]
+                    data = next(self.dl)[0].cuda()
 
                     with autocast(enabled = self.amp):
                         loss = self.model.get_simple_loss(data)
@@ -640,7 +640,7 @@ class Trainer(object):
 
                     milestone = self.step // self.save_and_sample_every
                     batches = num_to_groups(36, self.batch_size)
-                    all_images_list = list(map(lambda n: self.ema_model.sample(batch_size=n), batches))
+                    all_images_list = list(map(lambda n: self.ema_model.sample(sample_batch_size=n), batches))
                     all_images = torch.cat(all_images_list, dim=0)
                     utils.save_image(all_images, str(self.results_folder / f'sample-{milestone}.png'), nrow = 6)
                     self.save(milestone)
