@@ -80,7 +80,7 @@ class Diffusion(nn.Module):
     
     @torch.no_grad()
     def sample(self, sample_batch_size=16):
-        img_shape = (sample_batch_size, self.channels, self.img_size, self.img_size)
+        img_shape = (sample_batch_size, self.channels, self.image_size, self.image_size)
         device = self.sigma.device
         x_t = torch.randn(img_shape, device=device)
         for t in trange(self.num_timesteps - 1, -1, -1):
