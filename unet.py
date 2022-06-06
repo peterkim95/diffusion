@@ -518,6 +518,9 @@ class GaussianDiffusion(nn.Module):
         img = normalize_to_neg_one_to_one(img)
         return self.p_losses(img, t, *args, **kwargs)
 
+    def get_simple_loss(self, img, *args, **kwargs):
+        return self.forward(img, *args, **kwargs)
+
 # dataset classes
 
 class Dataset(data.Dataset):

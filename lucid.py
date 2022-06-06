@@ -6,13 +6,13 @@ from unet import Unet, GaussianDiffusion, Trainer
 IMG_SIZE = 32
 
 model = Unet(
-    dim = 64,
+    dim = 16,
     dim_mults = (1, 2, 4, 8)
 ).cuda()
 
 diffusion = GaussianDiffusion(
     model,
-    image_size = 128,
+    image_size = IMG_SIZE,
     timesteps = 1000,   # number of steps
     loss_type = 'l1'    # L1 or L2
 ).cuda()
