@@ -20,11 +20,11 @@ def normalize_to_neg_one_and_one(t):
 
 
 class Diffusion(nn.Module):
-    def __init__(self, denoiser, num_timesteps, img_size, channels):
+    def __init__(self, denoiser, num_timesteps, image_size, channels):
         super().__init__()
         self.denoiser = denoiser
         self.num_timesteps = num_timesteps
-        self.img_size = img_size
+        self.image_size = image_size
         self.channels = channels
 
         self.loss = nn.MSELoss()
@@ -97,7 +97,7 @@ CHANNELS = 1
 
 denoiser = Unet(dim=16, dim_mults=(1, 2, 4, 8), channels=CHANNELS).cuda()
 
-diffuser = Diffusion(denoiser=denoiser, num_timesteps=1000, img_size=IMG_SIZE, channels=CHANNELS).cuda()
+diffuser = Diffusion(denoiser=denoiser, num_timesteps=1000, image_size=IMG_SIZE, channels=CHANNELS).cuda()
 
 img_transform = transforms.Compose([transforms.Resize(IMG_SIZE),
                                     transforms.RandomHorizontalFlip(),
