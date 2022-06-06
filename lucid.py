@@ -7,12 +7,14 @@ IMG_SIZE = 32
 
 model = Unet(
     dim = 16,
-    dim_mults = (1, 2, 4, 8)
+    dim_mults = (1, 2, 4, 8),
+    channels = 1
 ).cuda()
 
 diffusion = GaussianDiffusion(
     model,
     image_size = IMG_SIZE,
+    channels=1,
     timesteps = 1000,   # number of steps
     loss_type = 'l1'    # L1 or L2
 ).cuda()
