@@ -455,10 +455,10 @@ class GaussianDiffusion(nn.Module):
         return img
 
     @torch.no_grad()
-    def sample(self, batch_size = 16):
+    def sample(self, sample_batch_size = 16):
         image_size = self.image_size
         channels = self.channels
-        return self.p_sample_loop((batch_size, channels, image_size, image_size))
+        return self.p_sample_loop((sample_batch_size, channels, image_size, image_size))
 
     @torch.no_grad()
     def interpolate(self, x1, x2, t = None, lam = 0.5):
