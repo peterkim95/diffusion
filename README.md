@@ -4,4 +4,4 @@ My attempt to replicate the [Denoising Diffusion Probabilistic Model](https://ar
 
 Shout-out to [LucidRains](https://github.com/lucidrains/denoising-diffusion-pytorch) for the inspiration and the code.
 
-![fake digits](results/sample-272.png)
+![fake digits](results/final/sample-272.png)
